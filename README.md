@@ -1,4 +1,4 @@
-__<center> LOG </center>__
+__<center >LOG</center>__
 ```
 # this is a code block
 ```  
