@@ -11,6 +11,7 @@
 ## 导入模块
 import numpy as np
 import operator
+from os import listdir
 
 
 ## 生成数据
@@ -152,6 +153,8 @@ def datingClassTest():
     print(errorCount)
 
 
+
+# 约会网站识别
 def classifyPerson():
     """
     :return: None
@@ -170,6 +173,61 @@ def classifyPerson():
 
 
 
+# 转换图像txt为向量
+def img2vector(filename):
+    """
+    :param filename: image file path or name
+    :return:
+    """
+    returnVect = np.zeros((1,1024))
+    fr = open(filename)
+    for i in range(32):
+        lineStr = fr.readline()
+        for j in range(32):
+            returnVect[0,32*i+j] = int(lineStr[j])
+    return returnVect
+
+
+
+# 手写数字识别
+def handwritingClassTest():
+    """
+    :return:
+    """
+    """
+    trainingFileList: a list contains all file names
+    m: number of files
+    trainingMat: matrix contains all training set
+    classNumStr: label of each sample in file 
+    """
+    hwLabels = []
+    # load the training set
+    trainingFileList = listdir('./data/trainingDigits')
+
+    m = len(trainingFileList)
+    trainingMat = np.zeros((m,1024))
+    for i in range(m):
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0]     #take off .txt
+        classNumStr = int(fileStr.split('_')[0])
+        hwLabels.append(classNumStr)
+        trainingMat[i,:] = img2vector('data/trainingDigits/{}'\
+                                      .format(fileNameStr))
+
+    testFileList = listdir('data/testDigits') # iterate through the test set
+    errorCount = 0.0
+    mTest = len(testFileList)
+    for i in range(mTest):
+        fileNameStr = testFileList[i]
+        fileStr = fileNameStr.split('.')[0]     #take off .txt
+        classNumStr = int(fileStr.split('_')[0])
+        vectorUnderTest = img2vector('data/testDigits/{}'.format(fileNameStr))
+        classifierResult = classify0(vectorUnderTest, trainingMat, hwLabels, 3)
+        print("the classifier came back with: {}, the real answer is: {}"\
+              .format(classifierResult, classNumStr))
+        if (classifierResult != classNumStr): errorCount += 1.0
+    print("\nthe total number of errors is: %{}".format(errorCount))
+    print("\nthe total error rate is: {}".format(errorCount/float(mTest)))
+
 if __name__ == '__main__':
-    datingClassTest()
     pass
